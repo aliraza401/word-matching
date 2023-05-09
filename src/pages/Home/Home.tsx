@@ -6,6 +6,7 @@ import {
   HomeTitle,
   StyledGameParagraph,
   StyledMatchedKeyParagraph,
+  StyledBoard,
 } from "./Home.styled";
 import { WORDS_DATA, shuffleArray } from "../../utils/constants";
 
@@ -16,6 +17,7 @@ const Home: React.FC<HomeProps> = ({}) => {
     null
   );
   const [matchedIds, setMatchedIds] = useState<number[]>([]);
+  const [shouldShake, setShouldShake] = useState<boolean>(false);
 
   useEffect(() => {
     const shuffledWords = shuffleArray(WORDS_DATA);
@@ -33,6 +35,8 @@ const Home: React.FC<HomeProps> = ({}) => {
       setSelectedWord(null);
     } else {
       setSelectedWord(null);
+      setShouldShake(true);
+      setTimeout(() => setShouldShake(false), 820);
     }
   };
 
@@ -55,7 +59,7 @@ const Home: React.FC<HomeProps> = ({}) => {
     <HomeContainer>
       <HomeTitle>Words Matching Game</HomeTitle>
 
-      <div style={{ width: "100%" }}>
+      <StyledBoard shouldShake={shouldShake}>
         <Row>
           <Col span={12}>
             {words.map((item) => (
@@ -81,7 +85,7 @@ const Home: React.FC<HomeProps> = ({}) => {
             ))}
           </Col>
         </Row>
-      </div>
+      </StyledBoard>
     </HomeContainer>
   );
 };
