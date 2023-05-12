@@ -1,13 +1,11 @@
-import { WORDS_DATA_TYPE } from "../pages/Home/Home.interface";
+import { Word } from "../pages/Home/Home.interface";
 
-export const ROUTES = {};
-
-export const WORDS_DATA: WORDS_DATA_TYPE[] = [
-  { text: "Sun", "matching-key": "shine", id: 1 },
-  { text: "Tree", "matching-key": "leaf", id: 2 },
-  { text: "Book", "matching-key": "read", id: 3 },
-  { text: "Car", "matching-key": "drive", id: 4 },
-  { text: "Phone", "matching-key": "call", id: 5 },
+export const WORDS: Word[] = [
+  { id: "1", text: "Sun", matchingKey: "shine" },
+  { id: "2", text: "Tree", matchingKey: "leaf" },
+  { id: "3", text: "Book", matchingKey: "read" },
+  { id: "4", text: "Car", matchingKey: "drive" },
+  { id: "5", text: "Phone", matchingKey: "call" },
 ];
 
 export const shuffleArray = (array: any[]) => {

@@ -17,8 +17,10 @@ const GlobalStyle = createGlobalStyle`
     margin: 0 auto;
     min-height: 100vh;
   }
-  p {
-    font-family: 'Lobster', sans-serif;
+  .word-container {
+    /* font-family: 'Lobster', sans-serif; */
+    text-align: center;
+    margin-bottom: 1rem;
   }
 `;
 

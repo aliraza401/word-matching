@@ -10,10 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@juggle/resize-observer": "^3.4.0",
     "@types/styled-components": "^5.1.26",
     "antd": "^5.4.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-use-measure": "^2.1.1",
     "styled-components": "^6.0.0-rc.1"
   },
   "devDependencies": {

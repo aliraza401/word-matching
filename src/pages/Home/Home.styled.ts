@@ -1,76 +1,65 @@
-import { Typography } from "antd";
-import styled, { keyframes, css } from "styled-components";
+import styled from "styled-components";
 
-interface GameParagraphProps {
-  isSelected?: boolean;
-  isMatched?: boolean;
-}
-
-interface GameBoardProps {
-  shouldShake: boolean;
-}
-
-const shake = keyframes`
-  10%, 90% {
-    transform: translate3d(-1px, 0, 0);
-  }
-  
-  20%, 80% {
-    transform: translate3d(2px, 0, 0);
-  }
-
-  30%, 50%, 70% {
-    transform: translate3d(-4px, 0, 0);
-  }
-
-  40%, 60% {
-    transform: translate3d(4px, 0, 0);
-  }
-`;
-
-export const StyledBoard = styled.div.attrs<GameBoardProps>((props) => ({
-  className: props.shouldShake ? "shake" : "",
-}))<GameBoardProps>`
-  width: 100%;
-  &.shake {
-    animation: ${css`
-      ${shake} 0.5s cubic-bezier(.36,.07,.19,.97) both
-    `};
-  }
-`;
-
-export const HomeContainer = styled.div`
+export const Container = styled.div`
+  position: relative;
   display: flex;
-  flex-direction: column;
+  height: 100vh;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  flex-wrap: wrap;
 `;
 
-export const HomeTitle = styled.h1`
-  font-size: 1.2rem;
-  margin-bottom: 3rem;
-  color: #001529;
-  text-align: center;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+export const WordContainer = styled.div`
+  width: 50%;
 `;
 
-export const StyledGameParagraph = styled(
-  Typography.Paragraph
-)<GameParagraphProps>`
-  color: ${(props) =>
-    props.isMatched ? "green" : props.isSelected ? "orange" : "black"};
-  font-weight: ${(props) => (props.isSelected ? "bold" : "normal")};
-  cursor: pointer;
-  font-size: 1rem;
-  text-align: center;
+interface WordProps {
+  isLineThrough: boolean;
+}
+
+export const Word = styled.span<WordProps>`
+  cursor: ${(props) => (props.draggable ? "move" : "pointer")};
+  text-decoration: ${(props) =>
+    props.isLineThrough ? "line-through" : "none"};
 `;
 
-export const StyledMatchedKeyParagraph = styled(
-  Typography.Paragraph
-)<GameParagraphProps>`
-  color: ${(props) => (props.isMatched ? "green" : "black")};
-  cursor: pointer;
-  text-align: center;
-  font-size: 1rem;
+export const Line = styled.div<{
+  from: React.RefObject<HTMLDivElement>;
+  to: React.RefObject<HTMLDivElement>;
+  color: string;
+}>`
+  position: absolute;
+  width: ${(props) =>
+    props.from.current && props.to.current
+      ? Math.hypot(
+          props.to.current.getBoundingClientRect().left -
+            props.from.current.getBoundingClientRect().left,
+          props.to.current.getBoundingClientRect().top -
+            props.from.current.getBoundingClientRect().top
+        )
+      : 0}px;
+  height: 2px;
+  background-color: ${(props) => props.color};
+  left: ${(props) =>
+    props.from.current
+      ? props.from.current.getBoundingClientRect().left -
+        (props.from.current.offsetParent
+          ? props.from.current.offsetParent.getBoundingClientRect().left
+          : 0)
+      : 0}px;
+  top: ${(props) =>
+    props.from.current
+      ? props.from.current.getBoundingClientRect().top +
+        props.from.current.offsetHeight / 2
+      : 0}px;
+  transform-origin: left top;
+  transform: ${(props) =>
+    props.from.current && props.to.current
+      ? `rotate(${Math.atan2(
+          props.to.current.getBoundingClientRect().top -
+            props.from.current.getBoundingClientRect().top,
+          props.to.current.getBoundingClientRect().left -
+            props.from.current.getBoundingClientRect().left
+        )}rad)`
+      : "none"};
 `;

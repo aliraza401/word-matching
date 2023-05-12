@@ -1,7 +1,7 @@
-export interface WORDS_DATA_TYPE {
+export interface Word {
+  id: string;
   text: string;
-  "matching-key": string;
-  id: number;
+  matchingKey: string;
 }
 
 export interface HomeProps {}
