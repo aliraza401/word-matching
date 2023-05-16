@@ -21,6 +21,7 @@ export const Word = styled.span<WordProps>`
   cursor: ${(props) => (props.draggable ? "move" : "pointer")};
   text-decoration: ${(props) =>
     props.isLineThrough ? "line-through" : "none"};
+    padding: 20px;
 `;
 
 export const Line = styled.div<{
