@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { shuffleArray } from "../../utils/constants";
-
-interface Word {
-  id: string;
-  text: string;
-  matchingKey: string;
-}
+import { Word } from "./Home.interface";
 
 const WORDS: Word[] = [
   { id: "1", text: "Sun", matchingKey: "shine" },
@@ -26,8 +21,12 @@ const CanvasMatchingGame: React.FC = () => {
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
 
-  const wordHeight = 70;
-  const wordMargin = 20;
+  const spaceTop = 100; // The top spacing for the words and connections in the canvas
+  const wordHeight = 70; // The height/width of each word box
+  const wordMargin = 30; // The margin between each word box
+  const startWordBox = 25; // The starting position for drawing the word boxes
+  const startMatchingBox = 300; // The starting position for drawing the matching key boxes
+  const startWordLines = startWordBox + wordHeight;
 
   useEffect(() => {
     setMixedArr(shuffleArray(WORDS));
@@ -73,23 +72,37 @@ const CanvasMatchingGame: React.FC = () => {
   const drawWords = (context: CanvasRenderingContext2D) => {
     if (!isLoaded) return;
 
-    const xLeft = 50;
-    const xRight = 300;
+    const fontSize = 12;
 
     mixedArr.forEach((word, index) => {
-      const y = 300 + index * (wordHeight + wordMargin);
-      const wordWidth = 300;
+      const y = spaceTop + index * (wordHeight + wordMargin);
+      const wordX = startWordBox;
+      const matchingKeyX = startMatchingBox;
 
-      context.font = "12px Arial";
       context.fillStyle = "black";
-      context.fillText(word.text, xLeft, y, wordWidth);
-      context.fillText(word.matchingKey, xRight, y, wordWidth);
+      context.fillRect(wordX, y, wordHeight, wordHeight);
+      context.fillStyle = "white";
+      context.font = `${fontSize}px Arial`;
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(word.text, wordX + wordHeight / 2, y + wordHeight / 2);
+      // canvasRef.current?.querySelector("div")?.style.setProperty("zIndex", "50");
+
+      context.fillStyle = "black";
+      context.fillRect(matchingKeyX, y, wordHeight, wordHeight);
+      context.fillStyle = "white";
+      context.fillText(
+        word.matchingKey,
+        matchingKeyX + wordHeight / 2,
+        y + wordHeight / 2
+      );
+      // canvasRef.current?.querySelector("div")?.style.setProperty("zIndex", "50");
     });
   };
 
   const drawConnections = (context: CanvasRenderingContext2D) => {
-    const startX = 80;
-    const endX = 300;
+    const startX = startWordLines;
+    const endX = startMatchingBox;
     const lineOffset = -25;
 
     connections.forEach((connection) => {
@@ -100,12 +113,12 @@ const CanvasMatchingGame: React.FC = () => {
 
       if (fromIndex !== -1 && toIndex !== -1) {
         const startY =
-          300 +
+          spaceTop +
           fromIndex * (wordHeight + wordMargin) +
           wordHeight / 2 +
           lineOffset;
         const endY =
-          300 +
+          spaceTop +
           toIndex * (wordHeight + wordMargin) +
           wordHeight / 2 +
           lineOffset;
@@ -131,7 +144,9 @@ const CanvasMatchingGame: React.FC = () => {
     const offsetX = event.clientX - (rect?.left || 0);
     const offsetY = event.clientY - (rect?.top || 0);
 
-    const wordIndex = Math.floor((offsetY - 300) / (wordHeight + wordMargin));
+    const wordIndex = Math.floor(
+      (offsetY - spaceTop) / (wordHeight + wordMargin)
+    );
 
     setIsDrawing(true);
     setStartX(offsetX);
@@ -158,7 +173,9 @@ const CanvasMatchingGame: React.FC = () => {
     const offsetX = event.touches[0].clientX - (rect?.left || 0);
     const offsetY = event.touches[0].clientY - (rect?.top || 0);
 
-    const wordIndex = Math.floor((offsetY - 300) / (wordHeight + wordMargin));
+    const wordIndex = Math.floor(
+      (offsetY - spaceTop) / (wordHeight + wordMargin)
+    );
 
     setIsDrawing(true);
     setStartX(offsetX);
@@ -193,10 +210,10 @@ const CanvasMatchingGame: React.FC = () => {
         drawWords(context);
         drawConnections(context);
 
-        const toIndex = Math.floor((offsetY - 250) / 80);
+        const toIndex = Math.floor((offsetY - spaceTop) / 80);
         context.beginPath();
         context.moveTo(startX, startY);
-        context.lineTo(offsetX, 250 + toIndex * 80 + 60 / 2);
+        context.lineTo(offsetX, spaceTop + toIndex * 80 + 60 / 2);
         context.lineWidth = 2;
         context.strokeStyle = "gray";
         context.stroke();
@@ -239,7 +256,9 @@ const CanvasMatchingGame: React.FC = () => {
     setIsDrawing(false);
 
     const offsetY = event.clientY - (rect?.top || 0);
-    const toIndex = Math.floor((offsetY - 300) / (wordHeight + wordMargin));
+    const toIndex = Math.floor(
+      (offsetY - spaceTop) / (wordHeight + wordMargin)
+    );
 
     const fromIndex = connections.findIndex(
       (connection) => connection.to === null && connection.startY === startY
@@ -268,7 +287,9 @@ const CanvasMatchingGame: React.FC = () => {
 
     const touch = event.changedTouches[0];
     const offsetY = touch.clientY - (rect?.top || 0);
-    const toIndex = Math.floor((offsetY - 300) / (wordHeight + wordMargin));
+    const toIndex = Math.floor(
+      (offsetY - spaceTop) / (wordHeight + wordMargin)
+    );
 
     const fromIndex = connections.findIndex(
       (connection) => connection.to === null && connection.startY === startY
@@ -301,11 +322,20 @@ const CanvasMatchingGame: React.FC = () => {
   return (
     <div
       ref={canvasContainerRef}
-      style={{ position: "relative", width: "100%", height: "100vh" }}
+      style={{
+        position: "relative",
+        width: "100%",
+        overflow: "hidden",
+        maxWidth: "100%",
+        height: "100vh",
+      }}
     >
       <canvas
         ref={canvasRef}
-        style={{ border: "2px solid gray", cursor: "crosshair" }}
+        style={{
+          border: "2px solid gray",
+          cursor: "crosshair",
+        }}
         onMouseDown={handleCanvasMouseDown}
         onMouseUp={handleCanvasMouseUp}
         onMouseMove={handleCanvasMouseMove}
